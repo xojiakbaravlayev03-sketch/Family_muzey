@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAMILY MUSEUM</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#090909;color:#f6d58a;
+ font-family:Georgia,serif;overflow:hidden
+}
+header{
+ padding:18px;background:#100d08;
+ border-bottom:2px solid #bd8734;
+ text-align:center;font-size:23px;
+ letter-spacing:3px
+}
+main{
+ height:85vh;position:relative;
+ background:radial-gradient(ellipse,#59401d,#17110b 60%,#050505);
+ perspective:900px;overflow:hidden
+}
+.wall{
+ position:absolute;left:10%;right:10%;
+ top:10%;height:65%;
+ background:linear-gradient(90deg,#17110b,#493019,#17110b);
+ border:4px solid #a77932;
+ box-shadow:0 0 50px #b9823033;
+}
+h1{text-align:center;margin-top:35px}
+.gallery{
+ display:flex;justify-content:center;
+ gap:20px;flex-wrap:wrap;margin-top:60px
+}
+.frame{
+ width:120px;height:160px;padding:7px;
+ background:linear-gradient(135deg,#f5d78e,#81521c);
+ cursor:pointer
+}
+.frame img{width:100%;height:100%;object-fit:cover}
+.floor{
+ position:absolute;bottom:-35%;height:55%;
+ width:150%;left:-25%;
+ transform:rotateX(65deg);
+ background:repeating-linear-gradient(
+ 90deg,#17120d 0 90px,#80602d 92px 94px
+ );
+}
+.controls{
+ position:absolute;bottom:15px;left:50%;
+ transform:translateX(-50%);
+ display:flex;gap:10px
+}
+button{
+ background:#241708;color:#f6d58a;
+ border:1px solid #bd8734;
+ padding:12px;border-radius:8px
+}
+</style>
+</head>
+<body>
+
+<header>♜ FAMILY MUSEUM</header>
+
+<main id="museum">
+<div class="wall">
+<h1>FAMILY MUSEUM</h1>
+<p style="text-align:center">
+Bir oila — bir umr hikoyasi
+</p>
+<div class="gallery" id="gallery"></div>
+</div>
+<div class="floor"></div>
+
+<div class="controls">
+<button onclick="move(0,-30)">⬆</button>
+<button onclick="move(-30,0)">⬅</button>
+<button onclick="move(30,0)">➡</button>
+<button onclick="move(0,30)">⬇</button>
+</div>
+</main>
+
+<script>
+let x=0,y=0;
+function move(a,b){
+ x+=a;y+=b;
+ document.querySelector('.wall').style.transform=
+ `translate(${x}px,${y}px)`;
+}
+
+const gallery=document.getElementById('gallery');
+
+function addPhoto(file){
+ const url=URL.createObjectURL(file);
+ const box=document.createElement('div');
+ box.className='frame';
+ const img=document.createElement('img');
+ img.src=url;
+ box.appendChild(img);
+ box.onclick=()=>window.open(url,'_blank');
+ gallery.appendChild(box);
+}
+
+const upload=document.createElement('input');
+upload.type='file';
+upload.accept='image/*';
+upload.multiple=true;
+upload.style.position='absolute';
+upload.style.top='12px';
+upload.style.right='12px';
+document.querySelector('main').appendChild(upload);
+upload.onchange=e=>[...e.target.files].forEach(addPhoto);
+</script>
+
+</body>
+</html>
