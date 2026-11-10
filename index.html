@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAMILY MUSEUM</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#100d09;color:#f5d99c;font-family:Georgia}
+header{padding:18px;text-align:center;border-bottom:2px solid #b88739}
+main{height:90vh;position:relative;overflow:hidden;
+background:radial-gradient(circle,#59401d,#100d09)}
+button{padding:12px;background:#241708;color:#f5d99c;
+border:1px solid #bd8734;border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+<h2>♜ FAMILY MUSEUM</h2>
+Oilaviy xotiralar muzeyi
+<button onclick="setMode('walk')">3D yurish</button>
+<button onclick="setMode('pano')">360° ko‘rish</button>
+<button onclick="nextRoom()">Keyingi xona</button>
+</header>
+<main id="museum">
+<h1 style="text-align:center;padding-top:100px">FAMILY MUSEUM</h1>
+<div id="gallery" style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap"></div>
+</main>
+<script>
+let mode="walk",room=1;
+function setMode(m){
+mode=m;
+alert(m==="walk"?"3D yurish rejimi":"360° tomosha rejimi");
+}
+function nextRoom(){
+room++;
+document.querySelector("h1").textContent="Oilaviy xona "+room;
+}
+const input=document.createElement("input");
+input.type="file";
+input.accept="image/*";
+input.multiple=true;
+document.querySelector("main").append(input);
+input.onchange=e=>{
+[...e.target.files].forEach(file=>{
+let img=document.createElement("img");
+img.src=URL.createObjectURL(file);
+img.style="width:130px;height:170px;object-fit:cover;border:5px solid #bd8734;cursor:pointer";
+img.onclick=()=>window.open(img.src);
+document.getElementById("gallery").append(img);
+});
+};
+</script>
+</body>
+</html>
