@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAMILY MUSEUM</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:#090704;
+ color:#f6d58a;
+ font-family:Georgia,serif;
+ overflow-x:hidden;
+}
+
+header{
+ padding:22px 10px;
+ background:#100d08;
+ border-bottom:2px solid #bd8734;
+ text-align:center;
+ font-size:25px;
+ font-weight:bold;
+ letter-spacing:3px;
+}
+
+nav{
+ display:flex;
+ justify-content:center;
+ flex-wrap:wrap;
+ gap:8px;
+ padding:15px 8px;
+ background:#100d08;
+}
+
+button,.upload{
+ background:linear-gradient(135deg,#33200d,#171006);
+ color:#f6d58a;
+ border:1px solid #bd8734;
+ padding:12px 16px;
+ border-radius:10px;
+ font-size:15px;
+ cursor:pointer;
+}
+
+button:active,.upload:active{
+ transform:scale(.96);
+}
+
+main{
+ min-height:78vh;
+ position:relative;
+ overflow:hidden;
+ background:radial-gradient(
+ ellipse,#59401d,#17110b 60%,#050505
+ );
+ perspective:1000px;
+ padding:35px 10px 100px;
+}
+
+.wall{
+ position:relative;
+ margin:25px auto;
+ width:95%;
+ max-width:850px;
+ min-height:430px;
+ padding:20px 10px;
+ background:linear-gradient(
+ 90deg,#17110b,#493019,#17110b
+ );
+ border:5px solid #a77932;
+ box-shadow:0 0 50px #b9823044;
+ transition:transform .5s;
+ transform-style:preserve-3d;
+}
+
+h1{
+ text-align:center;
+ font-size:clamp(25px,6vw,42px);
+ margin:20px 0;
+}
+
+.subtitle{
+ text-align:center;
+ font-size:17px;
+}
+
+.gallery{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ gap:15px;
+ flex-wrap:wrap;
+ margin:35px auto;
+}
+
+.frame{
+ width:125px;
+ height:160px;
+ padding:7px;
+ background:linear-gradient(
+ 135deg,#f5d78e,#81521c
+ );
+ box-shadow:0 5px 20px #000;
+ cursor:pointer;
+ transition:.3s;
+}
+
+.frame:hover{
+ transform:scale(1.06);
+}
+
+.frame img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.floor{
+ position:absolute;
+ bottom:-100px;
+ left:-25%;
+ width:150%;
+ height:180px;
+ transform:rotateX(65deg);
+ background:repeating-linear-gradient(
+ 90deg,#17120d 0 90px,#80602d 92px 94px
+ );
+ pointer-events:none;
+}
+
+.controls{
+ display:flex;
+ justify-content:center;
+ gap:10px;
+ flex-wrap:wrap;
+ margin-top:25px;
+}
+
+.controls button{
+ min-width:55px;
+ font-size:20px;
+}
+
+.upload-area{
+ text-align:center;
+ margin:20px 0;
+}
+
+#fileInput{
+ display:none;
+}
+
+#status{
+ text-align:center;
+ font-size:14px;
+ margin:12px;
+ color:#e7c98b;
+}
+
+#viewer{
+ display:none;
+ position:fixed;
+ inset:0;
+ z-index:99;
+ background:#000e;
+ align-items:center;
+ justify-content:center;
+ padding:15px;
+}
+
+#viewer img{
+ max-width:95%;
+ max-height:85vh;
+ object-fit:contain;
+ border:4px solid #bd8734;
+}
+
+#closeViewer{
+ position:absolute;
+ top:20px;
+ right:20px;
+ font-size:22px;
+}
+
+footer{
+ text-align:center;
+ padding:20px;
+ background:#100d08;
+ color:#b99351;
+}
+
+@media(max-width:450px){
+ .frame{
+  width:105px;
+  height:140px;
+ }
+ header{font-size:21px}
+}
+</style>
+</head>
+
+<body>
+
+<header>♜ FAMILY MUSEUM</header>
+
+<nav>
+<button onclick="toggle3D()">3D yurish</button>
+<button onclick="view360()">360° ko‘rish</button>
+<button onclick="nextRoom()">Keyingi xona</button>
+</nav>
+
+<main id="museum">
+
+<div class="wall" id="wall">
+
+<h1>FAMILY MUSEUM</h1>
+
+<p class="subtitle" id="roomTitle">
+Bir oila — bir umr hikoyasi 🤎
+</p>
+
+<div class="upload-area">
+<label class="upload" for="fileInput">
+📷 Rasmlarni yuklash
+</label>
+<input
+ type="file"
+ id="fileInput"
+ accept="image/*"
+ multiple
+>
+</div>
+
+<p id="status">Oilaviy xotiralaringizni shu yerga joylang</p>
+
+<div class="gallery" id="gallery"></div>
+
+</div>
+
+<div class="floor"></div>
+
+<div class="controls">
+<button onclick="move(0,-30)">⬆</button>
+<button onclick="move(-30,0)">⬅</button>
+<button onclick="move(30,0)">➡</button>
+<button onclick="move(0,30)">⬇</button>
+</div>
+
+</main>
+
+<div id="viewer" onclick="closeViewer()">
+<button id="closeViewer">✕</button>
+<img id="bigImage" src="" alt="Oilaviy xotira">
+</div>
+
+<footer>
+© 2026 FAMILY MUSEUM | Oilaviy xotiralar muzeyi
+</footer>
+
+<script>
+const gallery=document.getElementById("gallery");
+const fileInput=document.getElementById("fileInput");
+const wall=document.getElementById("wall");
+const status=document.getElementById("status");
+
+let x=0;
+let y=0;
+let room=0;
+let is3D=false;
+let angle=0;
+
+const rooms=[
+ "Bir oila — bir umr hikoyasi 🤎",
+ "Bolalik xotiralari 🌿",
+ "Baxtli kunlarimiz ❤️",
+ "Oilamiz tarixi 👨‍👩‍👧‍👦",
+ "Unutilmas lahzalar ✨"
+];
+
+fileInput.addEventListener("change",function(e){
+
+ const files=Array.from(e.target.files);
+
+ files.forEach(file=>{
+
+  if(!file.type.startsWith("image/")) return;
+
+  const url=URL.createObjectURL(file);
+
+  const frame=document.createElement("div");
+  frame.className="frame";
+
+  const img=document.createElement("img");
+  img.src=url;
+  img.alt="Oilaviy xotira";
+
+  frame.appendChild(img);
+
+  frame.addEventListener("click",()=>{
+   document.getElementById("bigImage").src=url;
+   document.getElementById("viewer").style.display="flex";
+  });
+
+  gallery.appendChild(frame);
+
+ });
+
+ status.textContent=files.length+" ta rasm yuklandi! ❤️";
+
+ fileInput.value="";
+});
+
+function closeViewer(){
+ document.getElementById("viewer").style.display="none";
+}
+
+function move(a,b){
+
+ x+=a;
+ y+=b;
+
+ wall.style.transform=
+ `translate3d(${x}px,${y}px,0) rotateY(${angle}deg)`;
+}
+
+function toggle3D(){
+
+ is3D=!is3D;
+
+ if(is3D){
+  wall.style.transform=
+  `translate3d(${x}px,${y}px,50px) rotateY(-12deg) rotateX(4deg)`;
+  status.textContent="3D yurish rejimi yoqildi";
+ }else{
+  wall.style.transform=
+  `translate3d(${x}px,${y}px,0) rotateY(${angle}deg)`;
+  status.textContent="Oddiy ko‘rinish";
+ }
+}
+
+function view360(){
+
+ angle+=45;
+
+ wall.style.transform=
+ `translate3d(${x}px,${y}px,0) rotateY(${angle}deg)`;
+
+ status.textContent="360° ko‘rinish o‘zgartirildi";
+}
+
+function nextRoom(){
+
+ room=(room+1)%rooms.length;
+
+ document.getElementById("roomTitle").textContent=
+ rooms[room];
+
+ gallery.innerHTML="";
+
+ x=0;
+ y=0;
+ angle=0;
+
+ wall.style.transform="translate3d(0,0,0)";
+
+ status.textContent="Xona "+(room+1)+" ochildi";
+}
+</script>
+
+</body>
+</html>
