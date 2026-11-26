@@ -3,67 +3,60 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>XOJIAKBAR FAMILY MUSEUM</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Family Museum | Xojiakbar</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080706;color:#e8d1a0;font-family:Arial,sans-serif}
-header{
-padding:16px 10px;text-align:center;background:#0b0a09;
-border-bottom:1px solid #80602c
-}
-h1{font-size:23px;letter-spacing:3px;color:#d8b56c;margin:8px}
-#roomName{font-size:13px;color:#c7b38c}
-button{
-background:#19140d;color:#e9d3a5;border:1px solid #9c773b;
-border-radius:10px;padding:11px 13px;margin:4px;font-size:14px
-}
-button:active{background:#60471f}
-#scene{width:100%;height:60vh;min-height:340px;touch-action:none}
-#status{text-align:center;font-size:13px;padding:8px;color:#c4ae83}
-#panel{text-align:center;padding:5px 4px 14px}
-#movement{display:grid;grid-template-columns:repeat(3,65px);justify-content:center;gap:3px}
-#movement button{font-size:20px;height:50px}
+body{margin:0;background:#08090c;color:#e9d5a5;font-family:Arial}
+header{background:#0d0e12;text-align:center;padding:14px;border-bottom:1px solid #8c6a35}
+h1{font-size:22px;letter-spacing:3px;color:#d7b36b;margin:5px}
+#roomTitle{font-size:12px;color:#b8a17a}
+button{cursor:pointer;background:linear-gradient(#292318,#100e0a);color:#e8cc8d;border:1px solid #92713b;border-radius:12px;padding:11px;margin:4px}
+button:active{transform:scale(.96);background:#4a3820}
+#scene{width:100%;height:55vh;min-height:320px;touch-action:none}
+#status{text-align:center;font-size:12px;padding:8px;color:#c7b78c}
+#toolbar{text-align:center;padding:5px}
+#pad{display:grid;grid-template-columns:60px 60px 60px;justify-content:center;gap:2px}
+#pad button{height:52px;font-size:20px}
 #upload{display:none}
-#viewer{
-display:none;position:fixed;inset:0;background:#050505f5;
-z-index:10;align-items:center;justify-content:center;padding:20px
-}
-#viewerBox{max-width:95vw;max-height:90vh;text-align:center}
-#viewerImg{max-width:90vw;max-height:70vh;object-fit:contain;border:5px solid #c39a52}
-#viewerTitle{color:#e7c67e}
-#closeViewer{font-size:18px}
+#modal{display:none;position:fixed;z-index:5;inset:0;background:#000e;align-items:center;justify-content:center;padding:16px}
+#card{width:95%;max-width:500px;max-height:90vh;overflow:auto;background:#16130f;border:1px solid #b28b49;padding:16px;border-radius:15px;text-align:center}
+#bigPhoto{max-width:100%;max-height:55vh;object-fit:contain;border:4px solid #b28b49}
+input,textarea{width:100%;background:#0d0d0d;color:#eee;border:1px solid #76603a;padding:10px;border-radius:8px;margin:6px 0}
+#storyText{white-space:pre-wrap;text-align:left;color:#d6c39b}
 </style>
 </head>
 <body>
-
 <header>
 <h1>🏛 FAMILY MUSEUM</h1>
-<div id="roomName">Oilaviy xotiralar muzeyi</div>
-<button onclick="nextRoom()">🚪 Keyingi xona</button>
-<button onclick="document.getElementById('upload').click()">📷 Surat qo‘shish</button>
-<input type="file" id="upload" accept="image/*">
+<div id="roomTitle">Oilaviy xotiralar muzeyi</div>
+<button onclick="changeRoom(-1)">◀ Oldingi zal</button>
+<button onclick="changeRoom(1)">Keyingi zal ▶</button>
+<button onclick="document.getElementById('file').click()">＋ Surat qo‘shish</button>
+<input id="file" type="file" accept="image/*" hidden>
 </header>
 
 <div id="scene"></div>
 <div id="status">Muzeyni tomosha qiling • Barmoq bilan aylantiring</div>
 
-<div id="panel">
-<button onclick="turn(-0.3)">↶ Burilish</button>
-<button onclick="turn(0.3)">Burilish ↷</button>
-<div id="movement">
-<div></div><button onclick="move(0,1)">⬆️</button><div></div>
-<button onclick="move(-1,0)">⬅️</button>
-<button onclick="move(0,-1)">⬇️</button>
-<button onclick="move(1,0)">➡️</button>
+<div id="toolbar">
+<div id="pad">
+<div></div><button onclick="move(0,1)">⬆</button><div></div>
+<button onclick="move(-1,0)">⬅</button><button onclick="move(0,-1)">⬇</button><button onclick="move(1,0)">➡</button>
 </div>
+<button onclick="rotate(-.25)">↶ Chapga burilish</button>
+<button onclick="rotate(.25)">O‘ngga burilish ↷</button>
 </div>
 
-<div id="viewer">
-<div id="viewerBox">
-<img id="viewerImg">
-<h3 id="viewerTitle"></h3>
-<button id="closeViewer" onclick="closeViewer()">✕ Yopish</button>
+<div id="modal">
+<div id="card">
+<img id="bigPhoto">
+<h3 id="photoName"></h3>
+<div id="storyText"></div>
+<input id="editName" placeholder="Surat nomi">
+<textarea id="editStory" rows="3" placeholder="Oilaviy xotira yoki hikoya..."></textarea>
+<button onclick="saveStory()">💾 Xotirani saqlash</button>
+<button onclick="closeModal()">Yopish ✕</button>
 </div>
 </div>
 
@@ -71,331 +64,200 @@ z-index:10;align-items:center;justify-content:center;padding:20px
 import * as THREE from
 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-const sceneBox=document.getElementById("scene");
+const sceneBox=document.getElementById('scene');
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x080706);
-scene.fog=new THREE.Fog(0x080706,22,40);
+scene.background=new THREE.Color('#090a0e');
+scene.fog=new THREE.Fog(0x090a0e,22,48);
 
-const camera=new THREE.PerspectiveCamera(
-65,sceneBox.clientWidth/sceneBox.clientHeight,0.1,100
-);
-
+const camera=new THREE.PerspectiveCamera(65,1,.1,100);
 const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(sceneBox.clientWidth,sceneBox.clientHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
 renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 sceneBox.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xffe5c1,0x21160b,2));
+scene.add(new THREE.HemisphereLight(0xffe3b0,0x181820,2));
+const lamp=new THREE.PointLight(0xffd49a,100,40);
+lamp.position.set(0,5,0);scene.add(lamp);
 
-const light=new THREE.PointLight(0xffd39a,100,30);
-light.position.set(0,5,-3);
-scene.add(light);
+const mats={
+wall:new THREE.MeshStandardMaterial({color:0x20232c,roughness:.85}),
+floor:new THREE.MeshStandardMaterial({color:0x292019,roughness:.3,metalness:.2}),
+gold:new THREE.MeshStandardMaterial({color:0xb48b47,metalness:.65,roughness:.3}),
+dark:new THREE.MeshStandardMaterial({color:0x17120e}),
+skin:new THREE.MeshStandardMaterial({color:0xb98b6a}),
+shirt:new THREE.MeshStandardMaterial({color:0x252a32}),
+pants:new THREE.MeshStandardMaterial({color:0x161719})
+};
 
-const floorMat=new THREE.MeshStandardMaterial({
-color:0x30251a,roughness:0.24,metalness:0.3
-});
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,30),floorMat);
-floor.rotation.x=-Math.PI/2;
-floor.receiveShadow=true;
-scene.add(floor);
+let roomGroup=new THREE.Group();scene.add(roomGroup);
+let avatar=new THREE.Group();scene.add(avatar);
+let room=0,yaw=0,playerX=0,playerZ=2;
+let paintings=[],photos=[];
+const names=["Oilaviy xotiralar zali","Bolalik galereyasi","Oilamiz tarixi","Qadrli insonlar zali"];
 
-const ceiling=new THREE.Mesh(
-new THREE.PlaneGeometry(14,14),
-new THREE.MeshStandardMaterial({color:0x17120e,roughness:0.9})
-);
-ceiling.rotation.x=Math.PI/2;
-ceiling.position.y=6;
-scene.add(ceiling);
+function mesh(geo,mat,x,y,z,parent=roomGroup){
+const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);
+m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
+}
+function buildAvatar(){
+avatar.clear();
+mesh(new THREE.SphereGeometry(.23,18,16),mats.skin,0,1.85,0,avatar);
+mesh(new THREE.CapsuleGeometry(.28,.65,6,12),mats.shirt,0,1.15,0,avatar);
+mesh(new THREE.CapsuleGeometry(.11,.5,4,8),mats.shirt,-.38,1.25,0,avatar);
+mesh(new THREE.CapsuleGeometry(.11,.5,4,8),mats.shirt,.38,1.25,0,avatar);
+mesh(new THREE.CapsuleGeometry(.12,.55,4,8),mats.pants,-.15,.45,0,avatar);
+mesh(new THREE.CapsuleGeometry(.12,.55,4,8),mats.pants,.15,.45,0,avatar);
+mesh(new THREE.BoxGeometry(.23,.12,.4),mats.dark,-.15,.12,.05,avatar);
+mesh(new THREE.BoxGeometry(.23,.12,.4),mats.dark,.15,.12,.05,avatar);
+}
+buildAvatar();
 
-const gold=new THREE.MeshStandardMaterial({
-color:0xb68b48,metalness:0.65,roughness:0.3
-});
-const wallmat=new THREE.MeshStandardMaterial({
-color:0x182029,roughness:0.85
-});
-const wood=new THREE.MeshStandardMaterial({
-color:0x24170d,roughness:0.35,metalness:0.2
-});
-
-let room=0;
-let roomObjects=[];
-let paintings=[];
-let yaw=0;
-let player=new THREE.Vector3(0,0,1);
-let dragging=false,lastX=0;
-let savedPhotos=[];
-
-const roomNames=[
-"Oilaviy xotiralar galereyasi",
-"Bolalik xotiralari",
-"Oilamiz tarixi",
-"Qadrli insonlar xonasi",
-"Kelajak avlod uchun"
-];
-
-function addObj(obj){
-scene.add(obj);
-roomObjects.push(obj);
-return obj;
+function makeFrame(x,y,z,photo,title,story){
+const g=new THREE.Group();g.position.set(x,y,z);roomGroup.add(g);
+const w=1.55,h=1.95,b=.13;
+mesh(new THREE.BoxGeometry(w+2*b,b,.14),mats.gold,0,h/2+b/2,0,g);
+mesh(new THREE.BoxGeometry(w+2*b,b,.14),mats.gold,0,-h/2-b/2,0,g);
+mesh(new THREE.BoxGeometry(b,h,.14),mats.gold,-w/2-b/2,0,0,g);
+mesh(new THREE.BoxGeometry(b,h,.14),mats.gold,w/2+b/2,0,0,g);
+const backing=mesh(new THREE.PlaneGeometry(w,h),mats.dark,0,0,.09,g);
+if(photo){
+const texture=new THREE.TextureLoader().load(photo);
+texture.colorSpace=THREE.SRGBColorSpace;
+const pic=mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texture}),0,0,.12,g);
+}
+g.userData={painting:true,photo,title,story};
+paintings.push(g);
+return g;
 }
 
-function box(w,h,d,x,y,z,mat){
-const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
-m.position.set(x,y,z);
-m.castShadow=true;
-m.receiveShadow=true;
-return addObj(m);
+function createRoom(){
+roomGroup.clear();paintings=[];
+const roomColors=[0x20232c,0x26201b,0x1c2526,0x25201e];
+mats.wall.color.setHex(roomColors[room%4]);
+
+mesh(new THREE.PlaneGeometry(18,18),mats.floor,0,0,0).rotation.x=-Math.PI/2;
+mesh(new THREE.PlaneGeometry(18,18),mats.dark,0,6,0).rotation.x=Math.PI/2;
+mesh(new THREE.BoxGeometry(14,6,.35),mats.wall,0,3,-7);
+mesh(new THREE.BoxGeometry(14,6,.35),mats.wall,0,3,7);
+mesh(new THREE.BoxGeometry(.35,6,14),mats.wall,-7,3,0);
+mesh(new THREE.BoxGeometry(.35,6,14),mats.wall,7,3,0);
+
+// Classic wall trims
+for(const z of [-6.7,6.7]){
+mesh(new THREE.BoxGeometry(13.5,.12,.15),mats.gold,0,.45,z);
+mesh(new THREE.BoxGeometry(13.5,.12,.15),mats.gold,0,5.5,z);
 }
-
-function frame(x,y,z,wall,photoData,title){
-const group=new THREE.Group();
-group.position.set(x,y,z);
-addObj(group);
-
-const w=1.65,h=2.15;
-const border=0.12;
-
-function bar(w1,h1,x1,y1){
-const m=new THREE.Mesh(new THREE.BoxGeometry(w1,h1,0.12),gold);
-m.position.set(x1,y1,0);
-group.add(m);
-}
-bar(w+border*2,border,0,h/2+border/2);
-bar(w+border*2,border,0,-h/2-border/2);
-bar(border,h, -w/2-border/2,0);
-bar(border,h, w/2+border/2,0);
-
-const inner=new THREE.Mesh(
-new THREE.PlaneGeometry(w,h),
-new THREE.MeshBasicMaterial({color:0x493a27})
-);
-inner.position.z=0.08;
-group.add(inner);
-
-if(photoData){
-const tex=new THREE.TextureLoader().load(photoData);
-tex.colorSpace=THREE.SRGBColorSpace;
-const img=new THREE.Mesh(
-new THREE.PlaneGeometry(w,h),
-new THREE.MeshBasicMaterial({map:tex})
-);
-img.position.z=0.1;
-group.add(img);
-}
-
-group.userData.isPainting=true;
-group.userData.title=title||"Oilaviy xotira";
-group.userData.photo=photoData||null;
-paintings.push(group);
-return group;
-}
-
-function buildRoom(){
-roomObjects.forEach(o=>scene.remove(o));
-roomObjects=[];
-paintings=[];
-
-// Galereya devorlari
-box(14,6,.35,0,3,-7,wallmat);
-box(.35,6,14,-7,3,0,wallmat);
-box(.35,6,14,7,3,0,wallmat);
-
-// Devor bezaklari
-box(14,.25,.4,0,.35,-6.75,gold);
-box(14,.18,.4,0,5.6,-6.75,wood);
-
-// Pol chet bezagi
-box(14,.15,.3,0,.08,-6.7,gold);
-
-// Oltin ramkalar
-for(let i=0;i<5;i++){
-frame(-5+i*2.5,3,-6.72,"back",null,
-"Oilaviy xotira "+(i+1));
-}
-
-// Yon devorlar
 for(let i=0;i<4;i++){
-frame(-6.72,3,-4.5+i*3,"left",null,"Xotira");
-frame(6.72,3,-4.5+i*3,"right",null,"Xotira");
+makeFrame(-4.8+i*3.2,3,-6.77,null,"Oilaviy portret","");
+makeFrame(-6.77,3,-4.5+i*2.8,null,"Oilaviy portret","");
+makeFrame(6.77,3,-4.5+i*2.8,null,"Oilaviy portret","");
+}
+// Arka doorway visual at rear wall
+mesh(new THREE.BoxGeometry(2.4,3.3,.25),mats.dark,0,1.7,6.8);
+mesh(new THREE.BoxGeometry(2.65,.15,.3),mats.gold,0,3.3,6.65);
+mesh(new THREE.BoxGeometry(.15,3.3,.3),mats.gold,-1.25,1.65,6.65);
+mesh(new THREE.BoxGeometry(.15,3.3,.3),mats.gold,1.25,1.65,6.65);
+
+// User uploaded framed photos
+photos.forEach((p,i)=>makeFrame(-4+i*2.3,3,-6.78,p.data,p.name,p.story));
+avatar.position.set(playerX,0,playerZ);
+document.getElementById('roomTitle').textContent=names[room%names.length];
 }
 
-// O‘simliklar
-createPlant(-5.8,0,-5.5);
-createPlant(5.8,0,-5.5);
-
-// O‘rtadagi eksponat
-box(1.8,.9,1.2,0,.45,-2.4,wood);
-box(2,.08,1.4,0,.95,-2.4,gold);
-
-// uploaded photos
-savedPhotos.forEach((p,i)=>{
-frame(-4+i*2,3,-6.5,"back",p.data,p.title);
-});
-
-// Avatarning to‘liq tanasi
-createAvatar();
-
-document.getElementById("roomName").textContent=roomNames[room%roomNames.length];
+function changeRoom(n){
+room=(room+n+names.length)%names.length;
+playerX=0;playerZ=2;yaw=0;createRoom();
+status("Siz "+names[room]+" ga o‘tdingiz");
 }
+window.changeRoom=changeRoom;
 
-function createPlant(x,y,z){
-const pot=new THREE.Mesh(new THREE.CylinderGeometry(.35,.25,.6,16),wood);
-pot.position.set(x,.3,z);
-addObj(pot);
-const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.06,.1,1.6,8),wood);
-trunk.position.set(x,1.3,z);
-addObj(trunk);
-for(let i=0;i<7;i++){
-const leaf=new THREE.Mesh(
-new THREE.SphereGeometry(.35,8,8),
-new THREE.MeshStandardMaterial({color:0x23482c})
-);
-leaf.position.set(x+(Math.random()-.5)*1.2,2+Math.random()*1.2,z+(Math.random()-.5)*1.2);
-leaf.scale.set(.7,1.8,.7);
-addObj(leaf);
-}
-}
-
-let avatar;
-function createAvatar(){
-avatar=new THREE.Group();
-avatar.position.copy(player);
-scene.add(avatar);
-roomObjects.push(avatar);
-
-const clothes=new THREE.MeshStandardMaterial({color:0x171717});
-const skin=new THREE.MeshStandardMaterial({color:0xb98764});
-const pants=new THREE.MeshStandardMaterial({color:0x252525});
-const shoes=new THREE.MeshStandardMaterial({color:0x090909});
-
-function part(geo,mat,x,y,z){
-const m=new THREE.Mesh(geo,mat);
-m.position.set(x,y,z);
-m.castShadow=true;
-avatar.add(m);
-return m;
-}
-
-// To‘liq gavda
-part(new THREE.CylinderGeometry(.23,.35,.9,12),clothes,0,1.25,0);
-part(new THREE.SphereGeometry(.23,16,16),skin,0,1.95,0);
-part(new THREE.CylinderGeometry(.12,.15,.65,10),pants,-.16,.45,0);
-part(new THREE.CylinderGeometry(.12,.15,.65,10),pants,.16,.45,0);
-part(new THREE.BoxGeometry(.22,.12,.4),shoes,-.16,.12,.05);
-part(new THREE.BoxGeometry(.22,.12,.4),shoes,.16,.12,.05);
-part(new THREE.CylinderGeometry(.08,.1,.65,10),clothes,-.38,1.3,0);
-part(new THREE.CylinderGeometry(.08,.1,.65,10),clothes,.38,1.3,0);
-}
-
-function nextRoom(){
-room++;
-player.set(0,0,1);
-yaw=0;
-buildRoom();
-document.getElementById("status").textContent="Siz "+roomNames[room%roomNames.length]+" ga kirdingiz";
-}
-
+function status(t){document.getElementById('status').textContent=t}
 function move(x,z){
-const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
-const side=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
-player.addScaledVector(forward,z*.45);
-player.addScaledVector(side,x*.45);
-player.x=Math.max(-5,Math.min(5,player.x));
-player.z=Math.max(-5,Math.min(4,player.z));
-avatar.position.copy(player);
+const dx=Math.cos(yaw)*x+Math.sin(yaw)*z;
+const dz=-Math.sin(yaw)*x+Math.cos(yaw)*z;
+playerX=Math.max(-5.3,Math.min(5.3,playerX+dx*.45));
+playerZ=Math.max(-5.2,Math.min(5.2,playerZ+dz*.45));
+avatar.position.set(playerX,0,playerZ);
 }
+window.move=move;
+window.rotate=a=>yaw+=a;
 
-function turn(a){yaw+=a;}
-
-renderer.domElement.addEventListener("pointerdown",e=>{
-dragging=true;lastX=e.clientX;
-renderer.domElement.setPointerCapture(e.pointerId);
+let drag=false,lastX=0;
+renderer.domElement.addEventListener('pointerdown',e=>{
+drag=true;lastX=e.clientX;renderer.domElement.setPointerCapture(e.pointerId);
 });
-renderer.domElement.addEventListener("pointerup",()=>dragging=false);
-renderer.domElement.addEventListener("pointercancel",()=>dragging=false);
-renderer.domElement.addEventListener("pointermove",e=>{
-if(!dragging)return;
-yaw+=(e.clientX-lastX)*0.005;
-lastX=e.clientX;
+renderer.domElement.addEventListener('pointerup',()=>drag=false);
+renderer.domElement.addEventListener('pointercancel',()=>drag=false);
+renderer.domElement.addEventListener('pointermove',e=>{
+if(!drag)return;yaw+=(e.clientX-lastX)*.005;lastX=e.clientX;
 });
 
-renderer.domElement.addEventListener("click",e=>{
-const rect=renderer.domElement.getBoundingClientRect();
-const mouse=new THREE.Vector2(
-((e.clientX-rect.left)/rect.width)*2-1,
--((e.clientY-rect.top)/rect.height)*2+1
-);
-const ray=new THREE.Raycaster();
+const ray=new THREE.Raycaster(),mouse=new THREE.Vector2();
+renderer.domElement.addEventListener('click',e=>{
+const r=renderer.domElement.getBoundingClientRect();
+mouse.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);
 ray.setFromCamera(mouse,camera);
 const hits=ray.intersectObjects(paintings,true);
 if(hits.length){
-let obj=hits[0].object;
-while(obj&&!obj.userData.isPainting)obj=obj.parent;
-if(obj)openViewer(obj.userData.photo,obj.userData.title);
+let p=hits[0].object;
+while(p&&!p.userData.painting)p=p.parent;
+if(p&&p.userData.photo)openPhoto(p.userData);
 }
 });
 
-function openViewer(src,title){
-if(!src)return;
-document.getElementById("viewerImg").src=src;
-document.getElementById("viewerTitle").textContent=title;
-document.getElementById("viewer").style.display="flex";
+function openPhoto(p){
+document.getElementById('bigPhoto').src=p.photo;
+document.getElementById('photoName').textContent=p.title||"Oilaviy surat";
+document.getElementById('storyText').textContent=p.story||"Bu suratga oilaviy xotira yozilmagan.";
+document.getElementById('editName').value=p.title||"";
+document.getElementById('editStory').value=p.story||"";
+document.getElementById('modal').style.display='flex';
+window.currentPhoto=p;
 }
-window.closeViewer=()=>document.getElementById("viewer").style.display="none";
+window.closeModal=()=>document.getElementById('modal').style.display='none';
+window.saveStory=()=>{
+const p=window.currentPhoto;
+if(!p)return;
+p.title=document.getElementById('editName').value;
+p.story=document.getElementById('editStory').value;
+const i=photos.findIndex(x=>x.data===p.photo);
+if(i>=0){photos[i].name=p.title;photos[i].story=p.story;}
+try{localStorage.setItem('familyMuseum',JSON.stringify(photos));}catch(e){}
+createRoom();closeModal();status("Xotira saqlandi");
+};
 
-document.getElementById("upload").addEventListener("change",e=>{
-const file=e.target.files[0];
-if(!file)return;
+document.getElementById('file').addEventListener('change',e=>{
+const f=e.target.files[0];if(!f)return;
 const reader=new FileReader();
 reader.onload=()=>{
-const photo={data:reader.result,title:file.name};
-savedPhotos.push(photo);
-try{
-localStorage.setItem("familyMuseumPhotos",JSON.stringify(savedPhotos));
-}catch(err){
-document.getElementById("status").textContent=
-"Surat xotiraga saqlanmadi, lekin vaqtincha ko‘rsatildi";
-}
-buildRoom();
-document.getElementById("status").textContent=
-"Surat muzey devoriga qo‘shildi!";
+const p={data:reader.result,name:f.name,story:""};
+photos.push(p);
+try{localStorage.setItem('familyMuseum',JSON.stringify(photos));}
+catch(err){status("Surat brauzer xotirasiga sig‘madi");}
+createRoom();status("Surat muzey devoriga joylandi");
 };
-reader.readAsDataURL(file);
-e.target.value="";
+reader.readAsDataURL(f);e.target.value="";
 });
+
+try{photos=JSON.parse(localStorage.getItem('familyMuseum')||"[]");}catch(e){photos=[];}
+createRoom();
+
+function resize(){
+const w=sceneBox.clientWidth,h=sceneBox.clientHeight;
+camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);
+}
+resize();window.addEventListener('resize',resize);
 
 function animate(){
 requestAnimationFrame(animate);
-if(avatar){
-const behind=new THREE.Vector3(
-Math.sin(yaw)*4.2,2.7,Math.cos(yaw)*4.2
-);
-camera.position.copy(player).add(behind);
-camera.lookAt(player.x,player.y+1.2,player.z);
+const back=new THREE.Vector3(Math.sin(yaw)*4,2.8,Math.cos(yaw)*4);
+camera.position.set(playerX+back.x,back.y,playerZ+back.z);
+camera.lookAt(playerX,1.3,playerZ-2.5);
 avatar.rotation.y=yaw;
-}
 renderer.render(scene,camera);
 }
 animate();
-
-window.addEventListener("resize",()=>{
-camera.aspect=sceneBox.clientWidth/sceneBox.clientHeight;
-camera.updateProjectionMatrix();
-renderer.setSize(sceneBox.clientWidth,sceneBox.clientHeight);
-});
-
-window.nextRoom=nextRoom;
-window.move=move;
-window.turn=turn;
-
-try{
-savedPhotos=JSON.parse(localStorage.getItem("familyMuseumPhotos")||"[]");
-}catch(e){savedPhotos=[];}
-
-buildRoom();
 </script>
 </body>
 </html>
