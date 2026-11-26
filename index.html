@@ -1,56 +1,215 @@
+
 <!DOCTYPE html>
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAMILY MUSEUM</title>
+<title>Family Museum</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#100d09;color:#f5d99c;font-family:Georgia}
-header{padding:18px;text-align:center;border-bottom:2px solid #b88739}
-main{height:90vh;position:relative;overflow:hidden;
-background:radial-gradient(circle,#59401d,#100d09)}
-button{padding:12px;background:#241708;color:#f5d99c;
-border:1px solid #bd8734;border-radius:8px}
+body{margin:0;background:#090807;color:#e8d5a5;font-family:Arial}
+header{text-align:center;padding:18px;background:#111}
+h1{color:#d8b45b;letter-spacing:3px}
+button{background:#241b0c;color:#e8d5a5;border:1px solid #b38a39;
+padding:12px;border-radius:10px;margin:4px}
+#scene{height:65vh;width:100%;display:block}
+#info{text-align:center;padding:12px}
+#controls{text-align:center;padding:8px}
+#upload{display:none}
 </style>
 </head>
 <body>
 <header>
-<h2>♜ FAMILY MUSEUM</h2>
-Oilaviy xotiralar muzeyi
-<button onclick="setMode('walk')">3D yurish</button>
-<button onclick="setMode('pano')">360° ko‘rish</button>
+<h1>🏛 FAMILY MUSEUM</h1>
+<p id="roomName">Oilaviy xotiralar muzeyi</p>
 <button onclick="nextRoom()">Keyingi xona</button>
+<button onclick="rotate()">360° ko‘rish</button>
+<button onclick="toggleWalk()">Yurish rejimi</button>
+<button onclick="document.getElementById('upload').click()">📷 Surat qo‘shish</button>
+<input type="file" id="upload" accept="image/*">
 </header>
-<main id="museum">
-<h1 style="text-align:center;padding-top:100px">FAMILY MUSEUM</h1>
-<div id="gallery" style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap"></div>
-</main>
-<script>
-let mode="walk",room=1;
-function setMode(m){
-mode=m;
-alert(m==="walk"?"3D yurish rejimi":"360° tomosha rejimi");
+
+<div id="scene"></div>
+<div id="info">Muzeyni barmoq bilan aylantiring</div>
+
+<div id="controls">
+<button onclick="move(0.5)">⬆️</button><br>
+<button onclick="move(-0.5)">⬇️</button>
+<button onclick="turn(-0.15)">⬅️</button>
+<button onclick="turn(0.15)">➡️</button>
+</div>
+
+<script type="module">
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const container=document.getElementById('scene');
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x090807);
+scene.fog=new THREE.Fog(0x090807,15,40);
+
+const camera=new THREE.PerspectiveCamera(70,
+container.clientWidth/container.clientHeight,0.1,100);
+camera.position.set(0,1.7,5);
+
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(container.clientWidth,container.clientHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+container.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffe4b0,0x221100,2));
+
+const light=new THREE.PointLight(0xffd58a,35,30);
+light.position.set(0,4,0);
+scene.add(light);
+
+const floor=new THREE.Mesh(
+new THREE.PlaneGeometry(30,30),
+new THREE.MeshStandardMaterial({color:0x292016,roughness:0.7})
+);
+floor.rotation.x=-Math.PI/2;
+floor.position.y=0;
+scene.add(floor);
+
+const rooms=[];
+let room=0;
+let yaw=0,pitch=0;
+let walking=false,autoRotate=false;
+
+function createRoom(index){
+rooms.forEach(o=>scene.remove(o));
+rooms.length=0;
+
+const colors=[0x342416,0x202535,0x302020,0x202d24];
+const wallMat=new THREE.MeshStandardMaterial({color:colors[index%4]});
+
+function box(w,h,d,x,y,z,mat){
+const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+m.position.set(x,y,z);
+scene.add(m);rooms.push(m);
+return m;
 }
+
+box(14,6,.3,0,3,-7,wallMat);
+box(14,6,.3,0,3,7,wallMat);
+box(.3,6,14,-7,3,0,wallMat);
+box(.3,6,14,7,3,0,wallMat);
+
+const gold=new THREE.MeshStandardMaterial({
+color:0xb58b43,metalness:.7,roughness:.3
+});
+
+for(let i=0;i<4;i++){
+const frame=box(1.7,2,.15,-4.8+i*3.2,2.8,-6.78,gold);
+frame.userData.memory=true;
+frame.userData.title="Oilaviy xotira "+(i+1);
+}
+
+const title=document.getElementById('roomName');
+const names=["Oilaviy xotiralar muzeyi","Bolalik xotiralari",
+"Oilamiz tarixi","Qadrli xotiralar"];
+title.textContent=names[index%names.length];
+}
+
+createRoom(0);
+
 function nextRoom(){
 room++;
-document.querySelector("h1").textContent="Oilaviy xona "+room;
+createRoom(room);
+document.getElementById('info').textContent=
+"Yangi xona: "+document.getElementById('roomName').textContent;
 }
-const input=document.createElement("input");
-input.type="file";
-input.accept="image/*";
-input.multiple=true;
-document.querySelector("main").append(input);
-input.onchange=e=>{
-[...e.target.files].forEach(file=>{
-let img=document.createElement("img");
-img.src=URL.createObjectURL(file);
-img.style="width:130px;height:170px;object-fit:cover;border:5px solid #bd8734;cursor:pointer";
-img.onclick=()=>window.open(img.src);
-document.getElementById("gallery").append(img);
+
+function rotate(){
+autoRotate=!autoRotate;
+document.getElementById('info').textContent=
+autoRotate?"360° aylanish yoqildi":"360° aylanish o‘chirildi";
+}
+
+function toggleWalk(){
+walking=!walking;
+document.getElementById('info').textContent=
+walking?"Yurish rejimi yoqildi":"Yurish rejimi o‘chirildi";
+}
+
+function move(step){
+if(!walking){
+document.getElementById('info').textContent=
+"Avval Yurish rejimini yoqing";
+return;
+}
+camera.position.x-=Math.sin(yaw)*step;
+camera.position.z-=Math.cos(yaw)*step;
+camera.position.x=Math.max(-5,Math.min(5,camera.position.x));
+camera.position.z=Math.max(-5,Math.min(5,camera.position.z));
+}
+
+function turn(amount){yaw+=amount;}
+
+let dragging=false,lastX=0,lastY=0;
+renderer.domElement.addEventListener('pointerdown',e=>{
+dragging=true;lastX=e.clientX;lastY=e.clientY;
 });
-};
+window.addEventListener('pointerup',()=>dragging=false);
+window.addEventListener('pointermove',e=>{
+if(!dragging)return;
+yaw-=(e.clientX-lastX)*0.005;
+pitch-=(e.clientY-lastY)*0.005;
+pitch=Math.max(-1,Math.min(1,pitch));
+lastX=e.clientX;lastY=e.clientY;
+});
+
+const raycaster=new THREE.Raycaster();
+renderer.domElement.addEventListener('click',e=>{
+const rect=renderer.domElement.getBoundingClientRect();
+const mouse=new THREE.Vector2(
+((e.clientX-rect.left)/rect.width)*2-1,
+-((e.clientY-rect.top)/rect.height)*2+1
+);
+raycaster.setFromCamera(mouse,camera);
+const hit=raycaster.intersectObjects(rooms);
+if(hit.length&&hit[0].object.userData.memory){
+document.getElementById('info').textContent=
+hit[0].object.userData.title+" — oilaviy xotiralar";
+}
+});
+
+document.getElementById('upload').addEventListener('change',e=>{
+const file=e.target.files[0];
+if(!file)return;
+const url=URL.createObjectURL(file);
+new THREE.TextureLoader().load(url,texture=>{
+const material=new THREE.MeshBasicMaterial({map:texture});
+const photo=new THREE.Mesh(new THREE.PlaneGeometry(2,2),material);
+photo.position.set(0,2,-6.5);
+scene.add(photo);
+rooms.push(photo);
+document.getElementById('info').textContent="Oilaviy surat muzeyga qo‘shildi!";
+});
+});
+
+function animate(){
+requestAnimationFrame(animate);
+if(autoRotate)yaw+=0.002;
+camera.rotation.order="YXZ";
+camera.rotation.y=yaw;
+camera.rotation.x=pitch;
+renderer.render(scene,camera);
+}
+animate();
+
+window.addEventListener('resize',()=>{
+camera.aspect=container.clientWidth/container.clientHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(container.clientWidth,container.clientHeight);
+});
+
+window.nextRoom=nextRoom;
+window.rotate=rotate;
+window.toggleWalk=toggleWalk;
+window.move=move;
+window.turn=turn;
 </script>
-<script src="script.js"></script>
 </body>
 </html>
