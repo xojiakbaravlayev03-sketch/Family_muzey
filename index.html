@@ -644,6 +644,14 @@ function resize(){
 }
 window.addEventListener('resize',resize);
 resize();
+ <script>
+setTimeout(() => {
+  const loading = document.getElementById('loading');
+  if (loading && loading.style.display !== 'none') {
+    document.getElementById('loadText').textContent =
+      'Yuklanish sekinlashdi. Internet yoki 3D modelni tekshiring.';
+  }
+}, 10000);
 </script>
 </body>
 </html>
