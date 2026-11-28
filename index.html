@@ -3,79 +3,76 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Family Museum 3D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>XOJIAKBAR | FAMILY MUSEUM</title>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#050505;color:#d8bd83;font-family:Arial;overflow:hidden}
+body{
+ margin:0;background:#050505;color:#d9bc7b;
+ font-family:Arial,sans-serif;overflow:hidden
+}
 #scene{position:fixed;inset:0}
 canvas{width:100%;height:100%;display:block;touch-action:none}
 
-#header{
-position:absolute;top:0;left:0;right:0;
-padding:15px;text-align:center;
-background:linear-gradient(#000c,transparent);
-pointer-events:none
+#loading{
+ position:fixed;inset:0;z-index:20;
+ background:#050505;display:flex;flex-direction:column;
+ justify-content:center;align-items:center;text-align:center
 }
-#title{font-size:19px;letter-spacing:4px;font-weight:bold;color:#dfbd76}
-#hallName{margin-top:6px;font-size:12px;color:#c8b28b}
+#loading h2{letter-spacing:4px;color:#d8b56f}
+#loading small{color:#aaa;margin-top:10px}
+#header{
+ position:absolute;top:0;width:100%;text-align:center;
+ padding:15px;background:linear-gradient(#000d,transparent);
+ pointer-events:none
+}
+#title{font-size:19px;letter-spacing:4px}
+#hallName{font-size:12px;margin-top:7px;color:#b7a17b}
 
 #topButtons{
-position:absolute;top:80px;left:0;right:0;
-display:flex;justify-content:center;flex-wrap:wrap;gap:6px
+ position:absolute;top:85px;width:100%;
+ display:flex;justify-content:center;gap:6px;flex-wrap:wrap;padding:5px
 }
 button{
-background:linear-gradient(145deg,#21190e,#090806);
-border:1px solid #97733d;color:#e4c98c;
-border-radius:13px;padding:12px 14px;font-size:13px
+ background:#17120b;color:#dfc183;border:1px solid #89672f;
+ border-radius:12px;padding:11px;font-size:12px
 }
-button:active{transform:scale(.94);background:#4a3216}
-
+button:active{background:#473116;transform:scale(.96)}
 #controls{
-position:absolute;bottom:18px;left:0;right:0;
-display:flex;justify-content:space-between;align-items:end;
-padding:0 18px;pointer-events:none
+ position:absolute;bottom:15px;width:100%;padding:0 14px;
+ display:flex;justify-content:space-between;align-items:end;
+ pointer-events:none
 }
 #pad,#turn{pointer-events:auto}
 #pad{
-display:grid;grid-template-columns:58px 58px 58px;
-grid-template-rows:54px 54px;gap:5px
+ display:grid;grid-template-columns:53px 53px 53px;
+ grid-template-rows:50px 50px;gap:4px
 }
-#pad button{font-size:22px;padding:0}
-#turn{display:flex;flex-direction:column;gap:6px}
-#turn button{min-width:105px}
-
+#pad button{font-size:20px;padding:0}
+#turn{display:flex;flex-direction:column;gap:5px}
+#turn button{min-width:100px}
 #message{
-position:absolute;bottom:160px;left:50%;
-transform:translateX(-50%);
-background:#100d09dd;color:#ddc58f;
-padding:9px 14px;border-radius:20px;font-size:12px;
-white-space:nowrap;text-align:center
+ position:absolute;bottom:145px;left:50%;transform:translateX(-50%);
+ background:#17120de8;border:1px solid #604922;
+ padding:9px 13px;border-radius:30px;font-size:12px;
+ text-align:center;white-space:nowrap
 }
-#file{display:none}
-
 #modal{
-display:none;position:fixed;inset:0;z-index:9;
-background:#000e;align-items:center;justify-content:center;padding:12px
+ display:none;position:fixed;inset:0;z-index:30;
+ background:#000d;align-items:center;justify-content:center;padding:15px
 }
 #panel{
-width:100%;max-width:430px;max-height:92vh;overflow:auto;
-background:#15110b;border:1px solid #b28a49;border-radius:15px;
-padding:15px;text-align:center
+ background:#17120c;border:1px solid #b18a4c;border-radius:16px;
+ padding:15px;width:100%;max-width:430px;max-height:90vh;overflow:auto
 }
-#bigPhoto{width:100%;max-height:45vh;object-fit:contain;border:3px solid #9b763d}
+#bigPhoto{width:100%;max-height:40vh;object-fit:contain}
 input,textarea{
-width:100%;padding:10px;margin:7px 0;background:#090909;
-color:white;border:1px solid #70552d;border-radius:8px
+ width:100%;padding:11px;margin:6px 0;
+ background:#080808;color:#eee;border:1px solid #72552e;border-radius:8px
 }
-#story{white-space:pre-wrap;text-align:left;color:#d9c69f}
-#loading{
-position:absolute;inset:0;background:#080706;z-index:20;
-display:flex;align-items:center;justify-content:center;
-flex-direction:column;color:#d4b36e;letter-spacing:2px;
-}
-#loading small{margin-top:12px;color:#a99a7a;letter-spacing:0}
+#story{white-space:pre-wrap;margin:10px 0;color:#c9b58f}
+#file{display:none}
 </style>
 </head>
 <body>
@@ -83,8 +80,8 @@ flex-direction:column;color:#d4b36e;letter-spacing:2px;
 <div id="scene"></div>
 
 <div id="loading">
-  <div>FAMILY MUSEUM</div>
-  <small id="loadText">3D muzey yuklanmoqda...</small>
+ <h2>FAMILY MUSEUM</h2>
+ <small id="loadText">3D muzey tayyorlanmoqda...</small>
 </div>
 
 <div id="header">
@@ -93,13 +90,13 @@ flex-direction:column;color:#d4b36e;letter-spacing:2px;
 </div>
 
 <div id="topButtons">
- <button onclick="changeHall(-1)">◀ OLDINGI ZAL</button>
+ <button onclick="changeHall(-1)">◀ OLDINGI</button>
  <button onclick="document.getElementById('file').click()">＋ SURAT</button>
- <button onclick="changeHall(1)">KEYINGI ZAL ▶</button>
+ <button onclick="changeHall(1)">KEYINGI ▶</button>
  <input id="file" type="file" accept="image/*">
 </div>
 
-<div id="message">Muzeyni tomosha qiling</div>
+<div id="message">Oilaviy muzeyga xush kelibsiz</div>
 
 <div id="controls">
  <div id="pad">
@@ -120,86 +117,60 @@ flex-direction:column;color:#d4b36e;letter-spacing:2px;
   <h3 id="photoTitle"></h3>
   <div id="story"></div>
   <input id="nameInput" placeholder="Surat nomi">
-  <textarea id="storyInput" rows="4" placeholder="Xotira yozing"></textarea>
+  <textarea id="storyInput" rows="4" placeholder="Xotira yozing..."></textarea>
   <button onclick="savePhoto()">SAQLASH</button>
   <button onclick="closePhoto()">YOPISH</button>
  </div>
 </div>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
-  }
-}
-</script>
+
 <script type="module">
 import * as THREE from
 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-import {GLTFLoader} from
-'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
-
-/* ==============================
-   SCENE
-================================*/
 const root=document.getElementById('scene');
+const loading=document.getElementById('loading');
+const loadText=document.getElementById('loadText');
+
+try {
+
+/* SCENE */
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x070605);
-scene.fog=new THREE.Fog(0x070605,30,65);
+scene.background=new THREE.Color(0x080706);
+scene.fog=new THREE.Fog(0x080706,25,48);
 
-const camera=new THREE.PerspectiveCamera(65,1,.1,100);
-
+const camera=new THREE.PerspectiveCamera(70,1,.1,100);
 const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.25;
+renderer.toneMappingExposure=1.2;
 root.appendChild(renderer.domElement);
 
-const loader=new GLTFLoader();
+/* LIGHT */
+scene.add(new THREE.HemisphereLight(0xffd8a0,0x15110e,2));
 
-/* ==============================
-   LIGHTS
-================================*/
-scene.add(new THREE.HemisphereLight(0xffd9a0,0x111015,1.5));
+const light=new THREE.PointLight(0xffc77b,130,50);
+light.position.set(0,5,-8);
+scene.add(light);
 
-const centralLight=new THREE.PointLight(0xffc879,100,50);
-centralLight.position.set(0,5,-12);
-scene.add(centralLight);
+const playerLight=new THREE.PointLight(0xffc982,30,12);
+scene.add(playerLight);
 
-const entranceLight=new THREE.PointLight(0xffba63,55,30);
-entranceLight.position.set(0,4,5);
-scene.add(entranceLight);
+/* MATERIAL */
+const wallMat=new THREE.MeshStandardMaterial({
+ color:0x27211a,roughness:.85
+});
+const floorMat=new THREE.MeshStandardMaterial({
+ color:0x30251a,roughness:.25,metalness:.3
+});
+const gold=new THREE.MeshStandardMaterial({
+ color:0xb58b46,metalness:.65,roughness:.28
+});
+const darkGold=new THREE.MeshStandardMaterial({
+ color:0x60421f,metalness:.5,roughness:.4
+});
 
-/* ==============================
-   MATERIALS
-================================*/
-const materials={
- wall:new THREE.MeshStandardMaterial({
-  color:0x25201c,roughness:.83
- }),
- floor:new THREE.MeshStandardMaterial({
-  color:0x342923,roughness:.24,metalness:.35
- }),
- ceiling:new THREE.MeshStandardMaterial({
-  color:0x11100e,roughness:.85
- }),
- gold:new THREE.MeshStandardMaterial({
-  color:0xb58b46,metalness:.7,roughness:.25
- }),
- goldDark:new THREE.MeshStandardMaterial({
-  color:0x65441e,metalness:.6,roughness:.35
- }),
- black:new THREE.MeshStandardMaterial({
-  color:0x090807
- })
-};
-
-/* ==============================
-   MUSEUM
-================================*/
+/* GROUPS */
 const museum=new THREE.Group();
 scene.add(museum);
 
@@ -215,432 +186,321 @@ let paintings=[];
 let uploaded=[];
 let currentPainting=null;
 
-function mesh(parent,geometry,material,x,y,z){
- const m=new THREE.Mesh(geometry,material);
+try{
+ uploaded=JSON.parse(localStorage.getItem('familyMuseum')||'[]');
+ if(!Array.isArray(uploaded))uploaded=[];
+}catch(e){uploaded=[]}
+
+/* OBJECT HELPER */
+function addBox(parent,w,h,d,mat,x,y,z){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
  m.position.set(x,y,z);
- m.castShadow=true;
- m.receiveShadow=true;
  parent.add(m);
  return m;
 }
 
-/* ==============================
-   ARCH DESIGN
-================================*/
-function arch(z){
- const g=new THREE.Group();
- g.position.z=z;
- museum.add(g);
-
- // Arch columns
- const columnGeo=new THREE.BoxGeometry(.32,3.8,.36);
- mesh(g,columnGeo,materials.gold,-2.7,1.9,0);
- mesh(g,columnGeo,materials.gold,2.7,1.9,0);
-
- // Rounded arch using curve tube
- const curve=new THREE.CatmullRomCurve3([
-  new THREE.Vector3(-2.7,3.8,0),
-  new THREE.Vector3(-2.5,4.4,0),
-  new THREE.Vector3(-1.8,5.0,0),
-  new THREE.Vector3(0,5.15,0),
-  new THREE.Vector3(1.8,5.0,0),
-  new THREE.Vector3(2.5,4.4,0),
-  new THREE.Vector3(2.7,3.8,0)
- ]);
- const tube=new THREE.TubeGeometry(curve,48,.17,10,false);
- mesh(g,tube,materials.gold,0,0,0);
-
- // inner dark arch trim
- const innerCurve=new THREE.CatmullRomCurve3([
-  new THREE.Vector3(-2.35,3.8,-.1),
-  new THREE.Vector3(-2.2,4.35,-.1),
-  new THREE.Vector3(-1.55,4.75,-.1),
-  new THREE.Vector3(0,4.95,-.1),
-  new THREE.Vector3(1.55,4.75,-.1),
-  new THREE.Vector3(2.2,4.35,-.1),
-  new THREE.Vector3(2.35,3.8,-.1)
- ]);
- mesh(g,new THREE.TubeGeometry(innerCurve,48,.07,8,false),materials.goldDark,0,0,0);
-
- // Arch base trim
- mesh(g,new THREE.BoxGeometry(5.8,.12,.4),materials.gold,0,.08,0);
-}
-
-/* ==============================
-   PAINTINGS
-================================*/
-const artURLs=[
- "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=700&q=85",
- "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=700&q=85",
- "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?auto=format&fit=crop&w=700&q=85",
- "https://images.unsplash.com/photo-1577720643272-265f09367456?auto=format&fit=crop&w=700&q=85",
- "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?auto=format&fit=crop&w=700&q=85"
-];
-
-function painting(x,z,side,data=null){
+/* ARCH */
+function createArch(z){
  const group=new THREE.Group();
- group.position.set(x,2.65,z);
-
- if(side===1)group.rotation.y=-Math.PI/2;
- if(side===-1)group.rotation.y=Math.PI/2;
+ group.position.z=z;
  museum.add(group);
 
- const w=1.55,h=2.0,b=.12;
+ addBox(group,.25,4,.35,gold,-2.7,2,0);
+ addBox(group,.25,4,.35,gold,2.7,2,0);
 
- // Frame body
- mesh(group,new THREE.BoxGeometry(w+2*b,h+2*b,.18),materials.goldDark,0,0,0);
- mesh(group,new THREE.BoxGeometry(w+2*b,b,.22),materials.gold,0,h/2+b/2,.05);
- mesh(group,new THREE.BoxGeometry(w+2*b,b,.22),materials.gold,0,-h/2-b/2,.05);
- mesh(group,new THREE.BoxGeometry(b,h,.22),materials.gold,-w/2-b/2,0,.05);
- mesh(group,new THREE.BoxGeometry(b,h,.22),materials.gold,w/2+b/2,0,.05);
+ const curve=new THREE.CatmullRomCurve3([
+  new THREE.Vector3(-2.7,3.9,0),
+  new THREE.Vector3(-2.5,4.45,0),
+  new THREE.Vector3(-1.8,4.95,0),
+  new THREE.Vector3(0,5.15,0),
+  new THREE.Vector3(1.8,4.95,0),
+  new THREE.Vector3(2.5,4.45,0),
+  new THREE.Vector3(2.7,3.9,0)
+ ]);
+ const arch=new THREE.Mesh(
+  new THREE.TubeGeometry(curve,40,.16,10,false),gold
+ );
+ group.add(arch);
 
- // Inner trim
- mesh(group,new THREE.BoxGeometry(w+.08,.045,.18),materials.goldDark,0,h/2-.05,.1);
- mesh(group,new THREE.BoxGeometry(w+.08,.045,.18),materials.goldDark,0,-h/2+.05,.1);
+ addBox(group,5.8,.12,.4,gold,0,.1,0);
+}
 
- // Artwork
- const artMat=new THREE.MeshBasicMaterial({color:0x1a120c});
- const canvas=mesh(group,new THREE.PlaneGeometry(w,h),artMat,0,0,.13);
+/* PICTURE */
+const defaultImages=[
+ "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=700&q=80",
+ "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=700&q=80",
+ "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?auto=format&fit=crop&w=700&q=80",
+ "https://images.unsplash.com/photo-1577720643272-265f09367456?auto=format&fit=crop&w=700&q=80",
+ "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?auto=format&fit=crop&w=700&q=80"
+];
 
- let photo=data?.data || artURLs[Math.floor(Math.abs(z*3+side*7))%artURLs.length];
+const textureLoader=new THREE.TextureLoader();
 
- const tex=new THREE.TextureLoader();
- tex.load(photo,t=>{
-  t.colorSpace=THREE.SRGBColorSpace;
-  canvas.material=new THREE.MeshBasicMaterial({map:t});
-  canvas.material.needsUpdate=true;
- },undefined,()=>{});
+function createPainting(x,z,side,data){
+ const group=new THREE.Group();
+ group.position.set(x,2.6,z);
+ group.rotation.y=side===1?Math.PI/2:-Math.PI/2;
+ museum.add(group);
 
- // Picture light
- const lamp=new THREE.SpotLight(0xffd08a,22,5,Math.PI/5,.5,1);
- lamp.position.set(0,1.45,.7);
- lamp.target.position.set(0,.3,0);
- group.add(lamp,lamp.target);
+ const w=1.55,h=2.05;
+ const frame=.12;
+
+ addBox(group,w+frame*2,h+frame*2,.16,darkGold,0,0,0);
+ addBox(group,w+frame*2,frame,.2,gold,0,h/2+frame/2,.05);
+ addBox(group,w+frame*2,frame,.2,gold,0,-h/2-frame/2,.05);
+ addBox(group,frame,h,.2,gold,-w/2-frame/2,0,.05);
+ addBox(group,frame,h,.2,gold,w/2+frame/2,0,.05);
+
+ const mat=new THREE.MeshBasicMaterial({color:0x19130c});
+ const picture=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);
+ picture.position.z=.12;
+ group.add(picture);
+
+ const url=data?.data||defaultImages[Math.abs(Math.floor(z+side*3))%defaultImages.length];
+
+ if(url){
+  textureLoader.load(url,tex=>{
+   tex.colorSpace=THREE.SRGBColorSpace;
+   picture.material=new THREE.MeshBasicMaterial({map:tex});
+  },undefined,()=>{});
+ }
 
  group.userData={
   isPainting:true,
-  photo,
-  title:data?.name||"Muzey portreti",
-  story:data?.story||""
+  photo:url,
+  title:data?.name||"Oilaviy xotira",
+  story:data?.story||"",
+  upload:data||null
  };
  paintings.push(group);
- return group;
 }
 
-/* ==============================
-   HALL BUILD
-================================*/
+/* BUILD HALL */
 function buildMuseum(){
  museum.clear();
  paintings=[];
 
- // Corridor floor
- mesh(museum,new THREE.PlaneGeometry(15,42),materials.floor,0,0,0)
- .rotation.x=-Math.PI/2;
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(15,42),floorMat);
+ floor.rotation.x=-Math.PI/2;
+ museum.add(floor);
 
- // Ceiling
- mesh(museum,new THREE.PlaneGeometry(15,42),materials.ceiling,0,6,0)
- .rotation.x=Math.PI/2;
+ const ceiling=new THREE.Mesh(
+  new THREE.PlaneGeometry(15,42),
+  new THREE.MeshStandardMaterial({color:0x11100d})
+ );
+ ceiling.rotation.x=Math.PI/2;
+ ceiling.position.y=6;
+ museum.add(ceiling);
 
- // Long walls
- mesh(museum,new THREE.BoxGeometry(.3,6,42),materials.wall,-7.2,3,0);
- mesh(museum,new THREE.BoxGeometry(.3,6,42),materials.wall,7.2,3,0);
+ addBox(museum,.3,6,42,wallMat,-7.2,3,0);
+ addBox(museum,.3,6,42,wallMat,7.2,3,0);
+ addBox(museum,14.4,6,.3,wallMat,0,3,-21);
+ addBox(museum,14.4,6,.3,wallMat,0,3,21);
 
- // Back and entrance walls
- mesh(museum,new THREE.BoxGeometry(14.4,6,.3),materials.wall,0,3,-21);
- mesh(museum,new THREE.BoxGeometry(14.4,6,.3),materials.wall,0,3,21);
-
- // Golden wall trim
  for(const side of [-1,1]){
   const x=side*7.02;
-  mesh(museum,new THREE.BoxGeometry(.08,.12,41),materials.gold,x,.45,0);
-  mesh(museum,new THREE.BoxGeometry(.08,.12,41),materials.gold,x,5.55,0);
-  mesh(museum,new THREE.BoxGeometry(.08,.08,41),materials.goldDark,x,1.1,0);
+  addBox(museum,.07,.12,41,gold,x,.5,0);
+  addBox(museum,.07,.12,41,gold,x,5.5,0);
  }
 
- // Reflective floor accents
- for(const x of [-6.4,6.4]){
-  mesh(museum,new THREE.BoxGeometry(.05,.02,41),materials.gold,x,.015,0);
- }
+ for(let z=-17;z<=17;z+=5.8)createArch(z);
 
- // Repeated arches
- for(let z=-17;z<=17;z+=5.8){
-  arch(z);
- }
-
- // Museum paintings
  for(let i=0;i<6;i++){
   const z=-17+i*6.4;
-  painting(-7.02,z,1);
-  painting(7.02,z,-1);
+  createPainting(-7.02,z,1,null);
+  createPainting(7.02,z,-1,null);
  }
 
- // Additional uploaded pictures
  uploaded.forEach((p,i)=>{
-  const side=i%2===0?1:-1;
-  const z=-16+Math.floor(i/2)*4.8;
-  painting(side*7.02,z,side,p);
+  createPainting(i%2===0?-7.02:7.02,-15+Math.floor(i/2)*4.5,i%2===0?1:-1,p);
  });
 
- // Lights along gallery
  for(let z=-18;z<=18;z+=4.5){
-  const light=new THREE.PointLight(0xffd39a,32,9);
-  light.position.set(0,5.3,z);
-  museum.add(light);
-
-  mesh(museum,new THREE.SphereGeometry(.08,12,12),materials.gold,0,5.82,z);
+  const l=new THREE.PointLight(0xffd39a,28,9);
+  l.position.set(0,5.2,z);
+  museum.add(l);
  }
 
  document.getElementById('hallName').textContent=halls[hall];
 }
 
-/* ==============================
-   REAL AVATAR
-================================*/
-let avatar=null;
-let mixer=null;
-let walkAction=null;
-let idleAction=null;
-let activeAction=null;
-let avatarLoaded=false;
+/* SIMPLE 3D PERSON */
+const avatar=new THREE.Group();
+scene.add(avatar);
 
-const avatarURL=
-'https://files.innerscene.com/library/relaxed-walk-sam-3d-person-animated-732f1206/b11d02f72ad777e03d68/relaxed-walk-sam-3d-person-animated.glb';
+const skin=new THREE.MeshStandardMaterial({color:0xc99b73});
+const clothes=new THREE.MeshStandardMaterial({color:0x24282e});
+const pants=new THREE.MeshStandardMaterial({color:0x16191d});
+const shoes=new THREE.MeshStandardMaterial({color:0x080808});
 
-loader.load(
- avatarURL,
- gltf=>{
-  avatar=gltf.scene;
-  avatar.scale.set(1,1,1);
-  avatar.position.set(0,0,3);
-  avatar.rotation.y=Math.PI;
+function bodyPart(geo,mat,x,y,z){
+ const m=new THREE.Mesh(geo,mat);
+ m.position.set(x,y,z);
+ avatar.add(m);
+ return m;
+}
 
-  avatar.traverse(o=>{
-   if(o.isMesh){
-    o.castShadow=true;
-    o.receiveShadow=true;
-   }
-  });
+bodyPart(new THREE.CylinderGeometry(.32,.42,.95,16),clothes,0,1.35,0);
+bodyPart(new THREE.SphereGeometry(.28,16,16),skin,0,2.05,0);
+bodyPart(new THREE.CylinderGeometry(.07,.08,.32,12),skin,0,1.93,0);
 
-  scene.add(avatar);
+bodyPart(new THREE.CylinderGeometry(.1,.12,.75,12),clothes,-.42,1.35,0);
+bodyPart(new THREE.CylinderGeometry(.1,.12,.75,12),clothes,.42,1.35,0);
+bodyPart(new THREE.CylinderGeometry(.12,.14,.85,12),pants,-.18,.45,0);
+bodyPart(new THREE.CylinderGeometry(.12,.14,.85,12),pants,.18,.45,0);
+bodyPart(new THREE.BoxGeometry(.28,.12,.4),shoes,-.18,.05,.08);
+bodyPart(new THREE.BoxGeometry(.28,.12,.4),shoes,.18,.05,.08);
 
-  if(gltf.animations && gltf.animations.length){
-   mixer=new THREE.AnimationMixer(avatar);
-   walkAction=mixer.clipAction(gltf.animations[0]);
-   walkAction.play();
-   walkAction.paused=true;
-   activeAction=walkAction;
-  }
+/* PLAYER */
+let px=0,pz=3,yaw=0;
 
-  avatarLoaded=true;
-  document.getElementById('loadText').textContent="Muzey tayyor";
-  setTimeout(()=>document.getElementById('loading').style.display='none',500);
- },
- xhr=>{
-  if(xhr.total){
-   document.getElementById('loadText').textContent=
-   "3D odam yuklanmoqda "+Math.round(xhr.loaded/xhr.total*100)+"%";
-  }
- },
- err=>{
-  console.error(err);
-  document.getElementById('loadText').textContent=
-  "Avatar yuklanmadi. Internetni tekshiring.";
-  setTimeout(()=>document.getElementById('loading').style.display='none',1800);
- }
-);
-
-/* ==============================
-   MOVEMENT
-================================*/
-let playerX=0,playerZ=3;
-let yaw=0;
-let isMoving=false;
-let moveDirection=0;
-
-window.move=(x,z)=>{
- if(!avatar)return;
-
- const forward=Math.cos(yaw);
- const side=Math.sin(yaw);
-
- playerX+=x*.5;
- playerZ-=z*.5;
-
- playerX=Math.max(-5.7,Math.min(5.7,playerX));
- playerZ=Math.max(-19,Math.min(19,playerZ));
-
- avatar.position.set(playerX,0,playerZ);
- isMoving=(x!==0||z!==0);
-
- if(isMoving && walkAction){
-  walkAction.paused=false;
-  walkAction.timeScale=1;
- }else if(walkAction){
-  walkAction.paused=true;
- }
-};
+function move(x,z){
+ const step=.65;
+ px+=Math.sin(yaw)*z*step+Math.cos(yaw)*x*step;
+ pz-=Math.cos(yaw)*z*step-Math.sin(yaw)*x*step;
+ px=Math.max(-5.8,Math.min(5.8,px));
+ pz=Math.max(-19,Math.min(19,pz));
+ avatar.position.set(px,0,pz);
+}
+window.move=move;
 
 window.rotate=a=>{
  yaw+=a;
- if(avatar)avatar.rotation.y=Math.PI+yaw;
+ avatar.rotation.y=yaw;
 };
 
 window.changeHall=n=>{
- hall=(hall+n+halls.length)%halls.length;
- playerX=0;playerZ=3;yaw=0;
- if(avatar)avatar.position.set(playerX,0,playerZ);
- if(avatar)avatar.rotation.y=Math.PI;
+ hall=(hall+n+4)%4;
+ px=0;pz=3;yaw=0;
+ avatar.position.set(px,0,pz);
+ avatar.rotation.y=0;
  buildMuseum();
  message(halls[hall]);
 };
 
-/* ==============================
-   CAMERA
-================================*/
-function cameraUpdate(){
- if(!avatar)return;
-
- const distance=4.2;
- const cameraX=playerX+Math.sin(yaw)*distance;
- const cameraZ=playerZ+Math.cos(yaw)*distance;
-
- camera.position.set(cameraX,2.65,cameraZ);
-
- camera.lookAt(
-  playerX+Math.sin(yaw)*1.5,
-  1.5,
-  playerZ-Math.cos(yaw)*2.3
+/* CAMERA */
+function updateCamera(){
+ const distance=4;
+ camera.position.set(
+  px-Math.sin(yaw)*distance,
+  2.8,
+  pz+Math.cos(yaw)*distance
  );
+ camera.lookAt(
+  px+Math.sin(yaw)*1.5,
+  1.5,
+  pz-Math.cos(yaw)*1.5
+ );
+ playerLight.position.set(px,3,pz);
 }
 
-/* ==============================
-   PAINTING INTERACTION
-================================*/
+/* PHOTO CLICK */
 const raycaster=new THREE.Raycaster();
 const pointer=new THREE.Vector2();
 
-renderer.domElement.addEventListener('pointerdown',e=>{
+renderer.domElement.addEventListener('click',e=>{
  const r=renderer.domElement.getBoundingClientRect();
  pointer.x=(e.clientX-r.left)/r.width*2-1;
  pointer.y=-((e.clientY-r.top)/r.height)*2+1;
  raycaster.setFromCamera(pointer,camera);
+ const hit=raycaster.intersectObjects(paintings,true);
+ if(!hit.length)return;
 
- const hits=raycaster.intersectObjects(paintings,true);
- if(!hits.length)return;
-
- let p=hits[0].object;
- while(p&&!p.userData.isPainting)p=p.parent;
-
- if(p&&p.userData.photo)openPhoto(p.userData);
+ let obj=hit[0].object;
+ while(obj&&!obj.userData.isPainting)obj=obj.parent;
+ if(obj)openPhoto(obj.userData);
 });
 
+/* PHOTO WINDOW */
 function openPhoto(p){
  currentPainting=p;
- document.getElementById('bigPhoto').src=p.photo;
+ document.getElementById('bigPhoto').src=p.photo||"";
  document.getElementById('photoTitle').textContent=p.title;
- document.getElementById('story').textContent=p.story||"Bu suratga xotira yozilmagan.";
- document.getElementById('nameInput').value=p.title;
- document.getElementById('storyInput').value=p.story;
+ document.getElementById('story').textContent=p.story||"Bu suratga hali xotira yozilmagan.";
+ document.getElementById('nameInput').value=p.title||"";
+ document.getElementById('storyInput').value=p.story||"";
  document.getElementById('modal').style.display='flex';
 }
 
-window.closePhoto=()=>document.getElementById('modal').style.display='none';
+window.closePhoto=()=>{
+ document.getElementById('modal').style.display='none';
+};
 
 window.savePhoto=()=>{
  if(!currentPainting)return;
- currentPainting.title=document.getElementById('nameInput').value;
- currentPainting.story=document.getElementById('storyInput').value;
+ const name=document.getElementById('nameInput').value;
+ const story=document.getElementById('storyInput').value;
+ const p=currentPainting.upload;
 
- const p=uploaded.find(x=>x.data===currentPainting.photo);
  if(p){
-  p.name=currentPainting.title;
-  p.story=currentPainting.story;
+  p.name=name;
+  p.story=story;
+  try{
+   localStorage.setItem('familyMuseum',JSON.stringify(uploaded));
+  }catch(e){
+   message("Xotira to‘lib qoldi");
+  }
  }
- localStorage.setItem('familyMuseum',JSON.stringify(uploaded));
- buildMuseum();
+ currentPainting.title=name;
+ currentPainting.story=story;
+ document.getElementById('photoTitle').textContent=name;
+ document.getElementById('story').textContent=story;
  closePhoto();
  message("Xotira saqlandi");
 };
 
-/* ==============================
-   UPLOAD
-================================*/
+/* UPLOAD */
 document.getElementById('file').addEventListener('change',e=>{
  const file=e.target.files[0];
  if(!file)return;
 
  const reader=new FileReader();
  reader.onload=()=>{
-  uploaded.push({
+  const p={
    data:reader.result,
    name:file.name,
    story:""
-  });
+  };
+  uploaded.push(p);
 
   try{
    localStorage.setItem('familyMuseum',JSON.stringify(uploaded));
+   buildMuseum();
+   message("Surat muzeyga qo‘shildi");
   }catch(err){
-   message("Brauzer xotirasi to‘ldi");
+   uploaded.pop();
+   message("Surat juda katta. Kichikroq rasm tanlang.");
   }
-
-  buildMuseum();
-  message("Surat muzeyga qo‘shildi");
  };
  reader.readAsDataURL(file);
- e.target.value='';
+ e.target.value="";
 });
 
-/* ==============================
-   TOUCH CAMERA
-================================*/
+/* TOUCH LOOK */
 let dragging=false,lastX=0;
+
 renderer.domElement.addEventListener('pointerdown',e=>{
- dragging=true;lastX=e.clientX;
+ dragging=true;
+ lastX=e.clientX;
 });
-renderer.domElement.addEventListener('pointerup',()=>dragging=false);
-renderer.domElement.addEventListener('pointercancel',()=>dragging=false);
+window.addEventListener('pointerup',()=>dragging=false);
+window.addEventListener('pointercancel',()=>dragging=false);
+
 renderer.domElement.addEventListener('pointermove',e=>{
  if(!dragging)return;
  yaw+=(e.clientX-lastX)*.005;
  lastX=e.clientX;
+ avatar.rotation.y=yaw;
 });
 
-/* ==============================
-   STATUS
-================================*/
+/* MESSAGE */
 function message(t){
  document.getElementById('message').textContent=t;
 }
 
-/* ==============================
-   LOAD / LOOP
-================================*/
-try{
- uploaded=JSON.parse(localStorage.getItem('familyMuseum')||'[]');
-}catch(e){
- uploaded=[];
-}
-
+/* RENDER */
 buildMuseum();
 
-const clock=new THREE.Clock();
-
-function animate(){
- requestAnimationFrame(animate);
-
- const dt=clock.getDelta();
-
- if(mixer)mixer.update(dt);
- cameraUpdate();
-
- renderer.render(scene,camera);
-}
-animate();
-
-/* ==============================
-   RESIZE
-================================*/
 function resize(){
  const w=root.clientWidth;
  const h=root.clientHeight;
@@ -650,14 +510,21 @@ function resize(){
 }
 window.addEventListener('resize',resize);
 resize();
- <script>
-setTimeout(() => {
-  const loading = document.getElementById('loading');
-  if (loading && loading.style.display !== 'none') {
-    document.getElementById('loadText').textContent =
-      'Yuklanish sekinlashdi. Internet yoki 3D modelni tekshiring.';
-  }
-}, 10000);
+
+function animate(){
+ requestAnimationFrame(animate);
+ updateCamera();
+ renderer.render(scene,camera);
+}
+animate();
+
+loadText.textContent="Muzey tayyor!";
+setTimeout(()=>loading.style.display='none',800);
+
+}catch(error){
+ console.error(error);
+ loadText.textContent="Xatolik: "+error.message;
+}
 </script>
 </body>
 </html>
